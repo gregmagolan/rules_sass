@@ -34,10 +34,12 @@ def _sass_binary_impl(ctx):
     # Reference the sass compiler and define the default options
     # that sass_binary uses.
     sassc = ctx.file._sassc
-    options = [
-        "--style={0}".format(ctx.attr.output_style),
-        "--sourcemap",
-    ]
+    if ctx.attr.source_map:
+        outputs = [ctx.outputs.css_file, ctx.actions.declare_file(ctx.outputs.css_file.basename + ".map", sibling=ctx.outputs.css_file)]
+        options = ["--style={0}".format(ctx.attr.output_style), "--sourcemap" ]
+    else:
+        outputs = [ctx.outputs.css_file]
+        options = ["--style={0}".format(ctx.attr.output_style)]
 
     # Load up all the transitive sources as dependent includes.
     transitive_sources = collect_transitive_sources(ctx)
@@ -49,7 +51,7 @@ def _sass_binary_impl(ctx):
         executable = sassc,
         arguments = options + [ctx.file.src.path, ctx.outputs.css_file.path],
         mnemonic = "SassCompiler",
-        outputs = [ctx.outputs.css_file, ctx.outputs.css_map_file],
+        outputs = outputs,
     )
 
 sass_deps_attr = attr.label_list(
@@ -77,6 +79,7 @@ sass_binary = rule(
             single_file = True,
         ),
         "output_style": attr.string(default = "compressed"),
+        "source_map": attr.bool(default = False),
         "deps": sass_deps_attr,
         "_sassc": attr.label(
             default = Label("//sass:sassc"),
@@ -87,7 +90,6 @@ sass_binary = rule(
     },
     outputs = {
         "css_file": "%{name}.css",
-        "css_map_file": "%{name}.css.map",
     },
     implementation = _sass_binary_impl,
 )
