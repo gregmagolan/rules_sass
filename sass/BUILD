@@ -10,7 +10,7 @@ exports_files([
 # Executable for the sass_binary rule
 nodejs_binary(
     name = "sass",
-    entry_point = "sass/sass.js",
+    entry_point = "@build_bazel_rules_sass_deps//node_modules/sass:sass.js",
     install_source_map_support = False,
     data = [
         "@build_bazel_rules_sass_deps//sass",
