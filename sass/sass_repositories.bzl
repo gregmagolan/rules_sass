@@ -24,4 +24,8 @@ def sass_repositories():
         name = "build_bazel_rules_sass_deps",
         package_json = "@io_bazel_rules_sass//sass:package.json",
         yarn_lock = "@io_bazel_rules_sass//sass:yarn.lock",
+        # Do not symlink node_modules as when used in downstream repos we should not create
+        # node_modules folders in the @io_bazel_rules_sass external repository. This is
+        # not supported by managed_directories.
+        symlink_node_modules = False,
     )
