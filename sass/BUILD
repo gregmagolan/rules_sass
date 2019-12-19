@@ -11,7 +11,6 @@ exports_files([
 nodejs_binary(
     name = "sass",
     entry_point = "sass_wrapper",
-    install_source_map_support = False,
     data = [
         ":sass_wrapper.js",
         "@build_bazel_rules_sass_deps//sass",
